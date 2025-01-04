@@ -8,7 +8,7 @@ Web Developer
 * 🖥️  See my portfolio at [My portfolio](http://gabrieldev.net)
 * ✉️  You can contact me at [gabrielcana30@gmail.com](mailto:gabrielcana30@gmail.com)
 * 🚀  I'm currently working on [AI Image Generator](http://(s)://pixelgenai.app)
-* 🧠  I'm learning Swift
+* 🧠  I'm learning Python
 
 ### Skills
 
