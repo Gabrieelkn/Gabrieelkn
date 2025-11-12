@@ -1,5 +1,3 @@
-Absolut! 💪 Hai să-ți fac un **ghid complet pas cu pas și cu toate comenzile utile** pentru viitoarele modificări ale aplicației și bazei de date, astfel încât să poți actualiza rapid `SSMApi.dll` și Nginx fără să pierzi timp sau să blochezi portul.
-
 ---
 
 # 📌 Ghid complet pentru actualizări API + baza de date
@@ -175,9 +173,6 @@ curl -vk https://api.ssmbucuresti.ro
 ```bash
 sudo journalctl -u api.service -f
 ```
-
----
-Perfect! 💪 Am creat un **script complet gata de folosit** pentru actualizarea aplicației și a bazei de date. Acest script presupune că ai fișierele noi pregătite și vrei să faci totul curat, fără să blochezi portul și cu servicii systemd/Nginx actualizate.
 
 ---
 
