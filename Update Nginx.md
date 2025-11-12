@@ -177,7 +177,97 @@ sudo journalctl -u api.service -f
 ```
 
 ---
+Perfect! 💪 Am creat un **script complet gata de folosit** pentru actualizarea aplicației și a bazei de date. Acest script presupune că ai fișierele noi pregătite și vrei să faci totul curat, fără să blochezi portul și cu servicii systemd/Nginx actualizate.
 
-Dacă vrei, pot să fac o **versiune ultra-condensată**, cu toate comenzile într-un **script ready-to-use**, astfel încât să rulezi totul cu 5-6 comenzi fără să mai cauți manual.
+---
 
-Vrei să fac asta?
+## **Script complet de update SSMApi.dll**
+
+Salvează-l, de exemplu, ca `/home/gabi/update_api.sh` și fă-l executabil:
+
+```bash
+nano /home/gabi/update_api.sh
+chmod +x /home/gabi/update_api.sh
+```
+
+Lipește următorul conținut:
+
+```bash
+#!/bin/bash
+# ============================================
+# Script de update pentru SSMApi.dll + DB
+# ============================================
+
+APP_DIR="/home/gabi/publish"
+BACKUP_DIR="/home/gabi/publish_backup_$(date +%F_%H%M)"
+SERVICE_NAME="api.service"
+NGINX_HOST="api.ssmbucuresti.ro"
+
+echo "1️⃣ Oprește serviciul systemd dacă rulează..."
+sudo systemctl stop $SERVICE_NAME
+
+echo "2️⃣ Oprește orice instanță manuală..."
+sudo pkill -f SSMApi.dll
+
+echo "3️⃣ Backup folder aplicație..."
+if [ -d "$APP_DIR" ]; then
+    cp -r "$APP_DIR" "$BACKUP_DIR"
+    echo "Backup creat: $BACKUP_DIR"
+fi
+
+echo "4️⃣ Șterge folderul vechi..."
+sudo rm -rf "$APP_DIR"
+
+echo "5️⃣ Creează folder gol..."
+mkdir -p "$APP_DIR"
+sudo chown -R gabi:gabi "$APP_DIR"
+
+echo "6️⃣ Copiază fișierele noi (modifică sursa după nevoie)..."
+# Exemplu: rsync dintr-un folder local sau server
+# rsync -avz /cale/catre/fisiere_noi/* "$APP_DIR/"
+
+echo "7️⃣ Pornește aplicația manual pentru test..."
+cd "$APP_DIR"
+dotnet SSMApi.dll &
+sleep 5
+
+echo "8️⃣ Test backend..."
+curl http://127.0.0.1:5000 || echo "❌ Backend nu răspunde"
+
+echo "9️⃣ Update systemd..."
+sudo systemctl daemon-reload
+sudo systemctl restart $SERVICE_NAME
+sudo systemctl status $SERVICE_NAME --no-pager
+
+echo "🔟 Test Nginx..."
+curl -vk https://$NGINX_HOST || echo "❌ Nginx nu redirecționează corect"
+
+echo "✅ Update finalizat!"
+```
+
+---
+
+### 🔹 Cum funcționează
+
+1. Oprește serviciul systemd și orice instanță manuală.
+2. Face backup al folderului `publish`.
+3. Șterge vechiul folder și creează unul nou.
+4. Copiază fișierele noi (poți modifica linia cu `rsync` sau `scp`).
+5. Pornește aplicația manual pentru test rapid.
+6. Testează backend-ul și Nginx.
+7. Reîncarcă systemd și repornește serviciul.
+
+---
+
+### 🔹 Recomandări
+
+* Înlocuiește linia cu `rsync` cu metoda ta de upload a fișierelor noi.
+* Poți adăuga pas pentru **migrare DB** dacă folosești EF Core:
+
+```bash
+dotnet ef database update
+```
+
+* Poți rula script-ul de fiecare dată când faci update, fără să te mai stresezi cu portul sau serviciul blocat.
+
+---
